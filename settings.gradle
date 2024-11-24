@@ -1,0 +1,6 @@
+rootProject.name = 'kafka-study'
+include 'spring-channel'
+include 'spring-consumer'
+include 'spring-producer'
+include 'spring-core-banking'
+include 'ops-core-server'
