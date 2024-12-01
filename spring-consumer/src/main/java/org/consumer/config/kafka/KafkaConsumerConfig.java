@@ -1,16 +1,14 @@
 package org.consumer.config.kafka;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StringSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.consumer.DelayedTransferDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
 
@@ -19,7 +17,7 @@ import java.util.HashMap;
 public class KafkaConsumerConfig {
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public DefaultKafkaConsumerFactory<String, DelayedTransferDto> consumerFactory() {
         final HashMap<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "my-group");
@@ -27,12 +25,16 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
 
-        return new DefaultKafkaConsumerFactory<>(props);
+        JsonDeserializer<DelayedTransferDto> deserializer =
+                new JsonDeserializer<>(DelayedTransferDto.class, false);
+
+        return new DefaultKafkaConsumerFactory<>(
+                props, new StringDeserializer(), deserializer);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
-        final ConcurrentKafkaListenerContainerFactory<String, String> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, DelayedTransferDto> kafkaListenerContainerFactory() {
+        final ConcurrentKafkaListenerContainerFactory<String, DelayedTransferDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
