@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class MessageDto {
-    private String id;
+    private Long id;
 
     @JsonProperty("from_account")
     private String fromAccount;
