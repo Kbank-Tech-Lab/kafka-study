@@ -2,7 +2,7 @@ package org.consumer.config.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.consumer.DelayedTransferDto;
+import org.consumer.dto.MessageDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class KafkaConsumerConfig {
 
     @Bean
-    public DefaultKafkaConsumerFactory<String, DelayedTransferDto> consumerFactory() {
+    public DefaultKafkaConsumerFactory<String, MessageDto> consumerFactory() {
         final HashMap<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "my-group");
@@ -25,16 +25,16 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
 
-        JsonDeserializer<DelayedTransferDto> deserializer =
-                new JsonDeserializer<>(DelayedTransferDto.class, false);
+        JsonDeserializer<MessageDto> deserializer =
+                new JsonDeserializer<>(MessageDto.class, false);
 
         return new DefaultKafkaConsumerFactory<>(
                 props, new StringDeserializer(), deserializer);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, DelayedTransferDto> kafkaListenerContainerFactory() {
-        final ConcurrentKafkaListenerContainerFactory<String, DelayedTransferDto> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, MessageDto> kafkaListenerContainerFactory() {
+        final ConcurrentKafkaListenerContainerFactory<String, MessageDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;

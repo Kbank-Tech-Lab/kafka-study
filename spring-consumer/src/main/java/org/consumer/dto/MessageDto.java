@@ -1,10 +1,10 @@
-package org.consumer;
+package org.consumer.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class DelayedTransferDto {
+public class MessageDto {
     private String id;
 
     @JsonProperty("from_account")
