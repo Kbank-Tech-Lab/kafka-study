@@ -38,7 +38,7 @@ public class MessageDto {
 
     @Override
     public String toString() {
-        return "DelayedTransferDto{" +
+        return "MessageDto{" +
                 "id='" + id + '\'' +
                 ", fromAccount='" + fromAccount + '\'' +
                 ", toBankCode='" + toBankCode + '\'' +
