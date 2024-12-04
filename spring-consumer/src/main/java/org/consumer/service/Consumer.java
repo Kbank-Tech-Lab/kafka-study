@@ -3,8 +3,10 @@ package org.consumer.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.consumer.dto.DelayedTransferStatusDto;
 import org.consumer.dto.MessageDto;
 import org.consumer.repository.DelayedTransferRepository;
+import org.consumer.util.ExternalApiClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,7 @@ public class Consumer {
     private final static String TOPIC = "delay-transfer-topic";
     private final static String GROUP_ID = "group1";
 
+    private final ExternalApiClient externalApiClient;
     private final DelayedTransferRepository delayedTransferRepository;
 
     @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
@@ -28,10 +31,15 @@ public class Consumer {
             delayedTransferStatusDto -> {
                 if ("pending".equals(delayedTransferStatusDto.getStatus())) {
                     log.info("Transfer is delayed");
-                    delayedTransferStatusDto.setStatus("is_pending");
-                    delayedTransferRepository.save(delayedTransferStatusDto);
+                    saveTransferStatus(delayedTransferStatusDto, "in_progress");
                 }
             }
         );
+    }
+
+    private void saveTransferStatus(DelayedTransferStatusDto delayedTransferStatusDto,
+                                    String status) {
+        delayedTransferStatusDto.setStatus(status);
+        delayedTransferRepository.save(delayedTransferStatusDto);
     }
 }
