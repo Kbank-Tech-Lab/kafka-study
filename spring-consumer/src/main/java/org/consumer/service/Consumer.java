@@ -3,10 +3,11 @@ package org.consumer.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.consumer.dto.DelayedTransferStatusDto;
+import org.consumer.dto.TransferStatusDto;
 import org.consumer.dto.MessageDto;
 import org.consumer.repository.DelayedTransferRepository;
 import org.consumer.util.ExternalApiClient;
+import org.consumer.util.TransferStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -23,25 +24,25 @@ public class Consumer {
     @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
     public void receive(ConsumerRecord<String, MessageDto> record) {
         final String userId = record.key();
-        final MessageDto message = record.value();
+        final MessageDto messageDto = record.value();
         log.info("Consumed message`s key: {}", userId);
-        log.info("Consumed message`s value: {}", message.toString());
+        log.info("Consumed message`s value: {}", messageDto.toString());
 
-        delayedTransferRepository.findById(message.getId()).ifPresent(
-            delayedTransferStatusDto -> {
-                if ("pending".equals(delayedTransferStatusDto.getStatus())) {
+        delayedTransferRepository.findById(messageDto.getId()).ifPresent(
+                transferStatusDto -> {
+                if (TransferStatus.PENDING.equals(transferStatusDto.getStatus())) {
                     log.info("Transfer is delayed");
-                    saveTransferStatus(delayedTransferStatusDto, "in_progress");
+                    saveTransferStatus(transferStatusDto, TransferStatus.IN_PROGRESS);
 
                     externalApiClient.callTransferApi(
-                        message,
+                        messageDto,
                         () -> {
                             log.info("Transfer is successful");
-                            saveTransferStatus(delayedTransferStatusDto, "completed");
+                            saveTransferStatus(transferStatusDto, TransferStatus.COMPLETED);
                         },
                         () -> {
                             log.info("Transfer is failed");
-                            saveTransferStatus(delayedTransferStatusDto, "failed");
+                            saveTransferStatus(transferStatusDto, TransferStatus.FAILED);
                         }
                     );
                 }
@@ -49,9 +50,9 @@ public class Consumer {
         );
     }
 
-    private void saveTransferStatus(DelayedTransferStatusDto delayedTransferStatusDto,
+    private void saveTransferStatus(TransferStatusDto transferStatusDto,
                                     String status) {
-        delayedTransferStatusDto.setStatus(status);
-        delayedTransferRepository.save(delayedTransferStatusDto);
+        transferStatusDto.setStatus(status);
+        delayedTransferRepository.save(transferStatusDto);
     }
 }

@@ -30,7 +30,7 @@ public class ExternalApiClient {
                                 Runnable successAction,
                                 Runnable failureAction) {
         restClient.post()
-                .uri("/transfer")
+                .uri("/process")
                 .body(messageDto)
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is2xxSuccessful()) {

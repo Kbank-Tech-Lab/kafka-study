@@ -1,6 +1,6 @@
 package org.consumer.repository;
 
-import org.consumer.dto.DelayedTransferStatusDto;
+import org.consumer.dto.TransferStatusDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -8,15 +8,15 @@ import java.util.Optional;
 @Repository
 public class DelayedTransferRepository {
     // TODO: DB 연동 이후 실제 구현 필요
-    public Optional<DelayedTransferStatusDto> findById(Long id) {
-        DelayedTransferStatusDto delayedTransferStatusDto = new DelayedTransferStatusDto();
-        delayedTransferStatusDto.setId(id);
-        delayedTransferStatusDto.setStatus("pending");
-        return Optional.of(delayedTransferStatusDto);
+    public Optional<TransferStatusDto> findById(Long id) {
+        TransferStatusDto transferStatusDto = new TransferStatusDto();
+        transferStatusDto.setId(id);
+        transferStatusDto.setStatus("pending");
+        return Optional.of(transferStatusDto);
     }
 
     // TODO: DB 연동 이후 실제 구현 필요
-    public DelayedTransferStatusDto save(DelayedTransferStatusDto delayedTransferStatusDto) {
-        return delayedTransferStatusDto;
+    public TransferStatusDto save(TransferStatusDto transferStatusDto) {
+        return transferStatusDto;
     }
 }
