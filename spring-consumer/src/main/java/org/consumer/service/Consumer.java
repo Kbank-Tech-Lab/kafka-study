@@ -32,6 +32,18 @@ public class Consumer {
                 if ("pending".equals(delayedTransferStatusDto.getStatus())) {
                     log.info("Transfer is delayed");
                     saveTransferStatus(delayedTransferStatusDto, "in_progress");
+
+                    externalApiClient.callTransferApi(
+                        message,
+                        () -> {
+                            log.info("Transfer is successful");
+                            saveTransferStatus(delayedTransferStatusDto, "completed");
+                        },
+                        () -> {
+                            log.info("Transfer is failed");
+                            saveTransferStatus(delayedTransferStatusDto, "failed");
+                        }
+                    );
                 }
             }
         );
