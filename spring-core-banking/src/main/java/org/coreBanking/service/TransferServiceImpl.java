@@ -43,6 +43,7 @@ public class TransferServiceImpl implements TransferService {
             // 송금내역 적재
             TransferLog transferLog = new TransferLog();
             transferLog.setFromAccountNumber(transferRequestDTO.getFromAccount());
+            transferLog.setToBankCode(transferRequestDTO.getToBankCode());
             transferLog.setToAccount(transferRequestDTO.getToAccount());
             transferLog.setTransferAmount(transferRequestDTO.getTransferAmount());
             transferLog.setProcessedAt(new Timestamp(System.currentTimeMillis()));
