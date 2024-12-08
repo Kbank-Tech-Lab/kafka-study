@@ -1,6 +1,7 @@
 package org.coreBanking.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,18 +13,21 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransferRequestDTO {
-    @NotNull(message = "ID is required")
-    private String id;
 
-    @NotNull(message = "From Account is required")
+    @NotNull(message = "ID is required")
+    @DecimalMin(value = "1", message = "ID must be greater than 0")
+    private Long id;
+
+    @NotBlank(message = "From Account is required and cannot be blank")
     private String fromAccount;
 
-    @NotNull(message = "To Bank Code is required")
+    @NotBlank(message = "To Bank Code is required and cannot be blank")
     private String toBankCode;
 
-    @NotNull(message = "To Account is required")
+    @NotBlank(message = "To Account is required and cannot be blank")
     private String toAccount;
 
-    @DecimalMin(value = "0.0", message = "Transfer Amount must be greater than or equal to 0")
+    @NotNull(message = "Transfer Amount is required")
+    @DecimalMin(value = "1", message = "Transfer Amount must be greater than 0")
     private Long transferAmount;
 }

@@ -1,6 +1,7 @@
 package org.coreBanking.service;
 
-import org.coreBanking.exception.AccountNotFoundException;
+import org.coreBanking.exception.CustomException;
+import org.coreBanking.exception.ErrorCode;
 import org.coreBanking.model.DepositAccount;
 import org.coreBanking.repository.DepositAccountRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class DepositServiceImpl implements DepositService {
         // 1. 계좌 락 잡고 조회
         DepositAccount depositAccount = depositAccountRepository
             .findByAccountNumberWithLock(accountNumber)
-            .orElseThrow(() -> new AccountNotFoundException(accountNumber));
+            .orElseThrow(() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         // 2. 입금 처리
         depositAccount.setBalance(depositAccount.getBalance() + amount);

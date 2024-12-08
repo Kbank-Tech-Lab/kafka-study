@@ -2,6 +2,8 @@ package org.coreBanking.service;
 
 import java.sql.Timestamp;
 import org.coreBanking.dto.TransferRequestDTO;
+import org.coreBanking.exception.CustomException;
+import org.coreBanking.exception.ErrorCode;
 import org.coreBanking.model.TransferLog;
 import org.coreBanking.repository.TransferLogRepository;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,7 @@ public class TransferServiceImpl implements TransferService {
         if (KbankCode.equals(transferRequestDTO.getToBankCode())) {
             // 자기 자신으로 송금 불가
             if (transferRequestDTO.getFromAccount().equals(transferRequestDTO.getToAccount())) {
-                throw new RuntimeException("Transfer to same account impossible.");
+                throw new CustomException(ErrorCode.TRANSFER_TO_SAME_ACCOUNT);
             }
 
             // 출금
@@ -47,7 +49,7 @@ public class TransferServiceImpl implements TransferService {
             transferLogRepository.save(transferLog);
 
         } else {
-            throw new RuntimeException("Transfer to other bank impossible.");  // 중소기업이라 타행이체 불가 ^^
+            throw new CustomException(ErrorCode.TRANSFER_TO_OTHER_BANK);
         }
     }
 }
