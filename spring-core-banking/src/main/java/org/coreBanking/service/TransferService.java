@@ -1,8 +1,8 @@
 package org.coreBanking.service;
 
-import org.coreBanking.dto.TransferRequest;
+import org.coreBanking.dto.TransferRequestDTO;
 
 public interface TransferService {
 
-    void processTransfer(TransferRequest transferRequest);
+    void processTransfer(TransferRequestDTO transferRequestDTO);
 }
