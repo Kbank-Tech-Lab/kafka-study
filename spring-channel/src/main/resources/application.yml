@@ -9,3 +9,14 @@ spring:
       host: 127.0.0.1
       port: 6400
       password: kbank
+    datasource:
+      url: jdbc:postgresql://postgres:5432/mydatabase
+      username: myuser
+      password: mypassword
+      driverClassName: org.postgresql.Driver
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      generate-ddl: true
+      show-sql: true
+      hibernate:
+          ddl-auto: create-drop
