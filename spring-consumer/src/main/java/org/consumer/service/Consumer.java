@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.consumer.dto.TransferStatusDto;
 import org.consumer.dto.MessageDto;
+import org.consumer.entity.DelayedTransferRequest;
 import org.consumer.repository.DelayedTransferRepository;
 import org.consumer.util.ExternalApiClient;
 import org.consumer.util.LockManager;
@@ -36,17 +37,17 @@ public class Consumer {
         userLock.lock();
 
         delayedTransferRepository.findById(messageDto.getId()).ifPresent(
-                transferStatusDto -> {
-                if (TransferStatus.PENDING.equals(transferStatusDto.getStatus())) {
+                delayedTransferRequest -> {
+                if (TransferStatus.PENDING.equals(delayedTransferRequest.getStatus())) {
                     externalApiClient.callTransferApi(
                         messageDto,
                         () -> {
                             log.info("Transfer is successful");
-                            saveTransferStatus(transferStatusDto, TransferStatus.COMPLETED);
+                            saveTransferStatus(delayedTransferRequest, TransferStatus.COMPLETED);
                         },
                         () -> {
                             log.info("Transfer is failed");
-                            saveTransferStatus(transferStatusDto, TransferStatus.FAILED);
+                            saveTransferStatus(delayedTransferRequest, TransferStatus.FAILED);
                         }
                     );
                 }
@@ -56,9 +57,9 @@ public class Consumer {
         userLock.unlock();
     }
 
-    private void saveTransferStatus(TransferStatusDto transferStatusDto,
+    private void saveTransferStatus(DelayedTransferRequest delayedTransferRequest,
                                     String status) {
-        transferStatusDto.setStatus(status);
-        delayedTransferRepository.save(transferStatusDto);
+        delayedTransferRequest.setStatus(status);
+        delayedTransferRepository.save(delayedTransferRequest);
     }
 }
