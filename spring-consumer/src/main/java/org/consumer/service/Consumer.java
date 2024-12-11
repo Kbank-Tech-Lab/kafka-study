@@ -31,9 +31,6 @@ public class Consumer {
         delayedTransferRepository.findById(messageDto.getId()).ifPresent(
                 transferStatusDto -> {
                 if (TransferStatus.PENDING.equals(transferStatusDto.getStatus())) {
-                    log.info("Transfer is delayed");
-                    saveTransferStatus(transferStatusDto, TransferStatus.IN_PROGRESS);
-
                     externalApiClient.callTransferApi(
                         messageDto,
                         () -> {
