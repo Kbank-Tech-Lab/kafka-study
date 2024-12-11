@@ -2,6 +2,11 @@ server:
   port: 80
 
 spring:
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: false
   data:
     redis:
       repositories:
@@ -19,4 +24,4 @@ spring:
       generate-ddl: true
       show-sql: true
       hibernate:
-          ddl-auto: create-drop
+          ddl-auto: update

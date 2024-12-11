@@ -1,21 +1,32 @@
 package org.channel.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.channel.dto.Customer;
+import org.channel.dto.DelayedTransferRequest;
+import org.channel.dto.TransferLog;
+import org.channel.repository.TransferLogRepository;
 import org.channel.service.TransferService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Controller("transfer")
-@RequiredArgsConstructor
 public class TransferController {
     private final TransferService transferService;
+    private final RestClient restClient;
+    public TransferController(TransferService transferService, RestClient.Builder restClientBuilder ) {
+        this.transferService = transferService;
+        this.restClient = restClientBuilder.build();
+    }
     @GetMapping("/home")
     public String transferHome(Model model) {
         // 고객식별자, 고객계좌 식별자, 고객계좌 잔액
@@ -24,26 +35,20 @@ public class TransferController {
         return "TransferHome";
     }
 
-    @GetMapping("/userList/{curPage}/{pageCount}")
-    @ResponseBody
-    public List<Object> userList(@PathVariable("curPage") Integer curPage, @PathVariable("pageCount") Integer pageCount) {
-        return new ArrayList<>();
-    }
-
+    // TO-DO: 페이징 처리
     @GetMapping("/accountHistory/{accountId}/{curPage}/{pageCount}")
     @ResponseBody
-    public List<Object> accountTransferHistory(@PathVariable("accountId") String accountId, @PathVariable("curPage") Integer curPage, @PathVariable("pageCount") Integer pageCount) {
+    public List<TransferLog> accountTransferHistory(@PathVariable("accountId") UUID accountId) {
         // 계좌이체내역 조회
-        return new ArrayList<>();
+        return transferService.getTransferLogsByAccountId(accountId);
     }
 
+    // sync, blocking 방식
     @PostMapping("/register/delayed_transfer")
     @ResponseBody
-    public String delayedTransfer(Object obj) {
-        // 날짜 혹은 시간을 보내는게 맞을까?
-        // fromAccount, toAccount, amount, transferDate, transferTime
-        Object out = transferService.registerDelayedTransfer(obj);
-        // 지연이체등록 성공시 성공 메시지 리턴
+    public String delayedTransfer(DelayedTransferRequest request) {
+        Object out = transferService.registerDelayedTransfer(request);
+        restClient.post().uri("/delayed-transfer").body(request).retrieve();
         return "00";
     }
 }
