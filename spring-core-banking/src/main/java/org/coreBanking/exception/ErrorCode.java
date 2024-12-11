@@ -15,7 +15,11 @@ public enum ErrorCode {
     // 송금 관련 에러
     INSUFFICIENT_BALANCE("COR2001", "Insufficient account balance"),
     TRANSFER_TO_SAME_ACCOUNT("COR2002", "Transfer to same account"),
-    TRANSFER_TO_OTHER_BANK("COR2003", "Transfer to other bank");
+    TRANSFER_TO_OTHER_BANK("COR2003", "Transfer to other bank"),
+
+    // 은행 관련 에러
+    BANK_NOT_FOUND("COR3001", "Bank not found"),
+    BANK_UNDER_MAINTENANCE("COR3002", "Bank under maintenance");
 
 
     private final String code;

@@ -1,6 +1,8 @@
 package org.coreBanking.service;
 
 import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.Instant;
 import org.coreBanking.dto.TransferRequestDTO;
 import org.coreBanking.exception.CustomException;
 import org.coreBanking.exception.ErrorCode;
@@ -14,14 +16,19 @@ public class TransferServiceImpl implements TransferService {
 
     private final String KbankCode = "089";
 
+    private final Clock clock;
     private final DepositService depositService;
     private final WithdrawalService withdrawalService;
+    private final OtherBankService otherBankService;
     private final TransferLogRepository transferLogRepository;
 
-    public TransferServiceImpl(DepositService depositService, WithdrawalService withdrawalService,
+    public TransferServiceImpl(Clock clock, DepositService depositService, WithdrawalService withdrawalService,
+        OtherBankService otherBankService,
         TransferLogRepository transferLogRepository) {
+        this.clock = clock;
         this.depositService = depositService;
         this.withdrawalService = withdrawalService;
+        this.otherBankService = otherBankService;
         this.transferLogRepository = transferLogRepository;
     }
 
@@ -29,7 +36,7 @@ public class TransferServiceImpl implements TransferService {
     @Transactional
     public void processTransfer(TransferRequestDTO transferRequestDTO) {
         if (KbankCode.equals(transferRequestDTO.getToBankCode())) {
-            // 자기 자신으로 송금 불가
+            // 자기 자신에게 송금 불가
             if (transferRequestDTO.getFromAccount().equals(transferRequestDTO.getToAccount())) {
                 throw new CustomException(ErrorCode.TRANSFER_TO_SAME_ACCOUNT);
             }
@@ -40,17 +47,30 @@ public class TransferServiceImpl implements TransferService {
             // 입금
             depositService.depositToAccount(transferRequestDTO.getToAccount(), transferRequestDTO.getTransferAmount());
 
-            // 송금내역 적재
-            TransferLog transferLog = new TransferLog();
-            transferLog.setFromAccountNumber(transferRequestDTO.getFromAccount());
-            transferLog.setToBankCode(transferRequestDTO.getToBankCode());
-            transferLog.setToAccount(transferRequestDTO.getToAccount());
-            transferLog.setTransferAmount(transferRequestDTO.getTransferAmount());
-            transferLog.setProcessedAt(new Timestamp(System.currentTimeMillis()));
-            transferLogRepository.save(transferLog);
+            // 송금 내역 적재
+            _saveTransferLog(transferRequestDTO);
 
         } else {
-            throw new CustomException(ErrorCode.TRANSFER_TO_OTHER_BANK);
+            // 출금
+            withdrawalService.withdrawFromAccount(transferRequestDTO.getFromAccount(), transferRequestDTO.getTransferAmount());
+
+            // 타행 서비스 호출
+            otherBankService.transferOtherBank(transferRequestDTO.getToBankCode(), transferRequestDTO.getToAccount(), transferRequestDTO.getTransferAmount());
+
+            // 송금 내역 적재
+            _saveTransferLog(transferRequestDTO);
         }
+    }
+
+    private void _saveTransferLog(TransferRequestDTO transferRequestDTO) {
+        TransferLog transferLog = new TransferLog();
+
+        transferLog.setFromAccountNumber(transferRequestDTO.getFromAccount());
+        transferLog.setToBankCode(transferRequestDTO.getToBankCode());
+        transferLog.setToAccount(transferRequestDTO.getToAccount());
+        transferLog.setTransferAmount(transferRequestDTO.getTransferAmount());
+        transferLog.setProcessedAt(Timestamp.from(Instant.now(clock)));
+
+        transferLogRepository.save(transferLog);
     }
 }
