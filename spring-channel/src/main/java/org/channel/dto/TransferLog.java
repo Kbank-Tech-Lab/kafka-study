@@ -9,6 +9,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.sql.Timestamp;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,12 +48,21 @@ public class TransferLog {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    public static TransferLog of(String fromAccountNumber, String toBankCode, String toAccount, Long transferAmount) {
+        TransferLog transferLog = new TransferLog();
+        transferLog.fromAccountNumber = fromAccountNumber;
+        transferLog.toBankCode = toBankCode;
+        transferLog.toAccount = toAccount;
+        transferLog.transferAmount = transferAmount;
+        return transferLog;
+    }
     @PrePersist
     public void prePersist() {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         this.createdAt = now;
         this.updatedAt = now;
     }
+
 
     @PreUpdate
     public void preUpdate() {

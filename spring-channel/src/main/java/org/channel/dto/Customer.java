@@ -7,10 +7,10 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
 public class Customer {
     @Id
     @GeneratedValue

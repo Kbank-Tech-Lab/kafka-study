@@ -7,6 +7,10 @@ spring:
       enabled: true
     restart:
       enabled: false
+  freemarker:
+    cache: false
+    suffix: .ftl
+    domain: "http://localhost:80"
   data:
     redis:
       repositories:
@@ -14,14 +18,12 @@ spring:
       host: 127.0.0.1
       port: 6400
       password: kbank
-    datasource:
-      url: jdbc:postgresql://postgres:5432/mydatabase
-      username: myuser
-      password: mypassword
-      driverClassName: org.postgresql.Driver
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
     jpa:
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
-      generate-ddl: true
-      show-sql: true
       hibernate:
-          ddl-auto: update
+        ddl-auto: update
+      show-sql: true
