@@ -45,6 +45,10 @@ public class DelayedTransferServiceImpl implements DelayedTransferService {
 
         request.setStatus(status);
 
+        if (status == Status.COMPLETED) {
+            request.setProcessedAt(new Timestamp(System.currentTimeMillis()));
+        }
+
         delayedTransferRequestRepository.save(request);
     }
 }
