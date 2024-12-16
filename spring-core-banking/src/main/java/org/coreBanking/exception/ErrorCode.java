@@ -19,7 +19,10 @@ public enum ErrorCode {
 
     // 은행 관련 에러
     BANK_NOT_FOUND("COR3001", "Bank not found"),
-    BANK_UNDER_MAINTENANCE("COR3002", "Bank under maintenance");
+    BANK_UNDER_MAINTENANCE("COR3002", "Bank under maintenance"),
+
+    // 지연이체 관련 에러
+    DELAYED_TRANSFER_NOT_FOUND("COR4001", "Delayed transfer not found");
 
 
     private final String code;

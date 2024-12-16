@@ -2,6 +2,8 @@ package org.coreBanking.service;
 
 import java.sql.Timestamp;
 import org.coreBanking.dto.DelayedTransferRequestDTO;
+import org.coreBanking.exception.CustomException;
+import org.coreBanking.exception.ErrorCode;
 import org.coreBanking.model.DelayedTransferRequest;
 import org.coreBanking.model.DelayedTransferRequest.Status;
 import org.coreBanking.repository.DelayedTransferRequestRepository;
@@ -32,5 +34,17 @@ public class DelayedTransferServiceImpl implements DelayedTransferService {
         request.setStatus(Status.PENDING);
 
         return delayedTransferRequestRepository.save(request);
+    }
+
+    @Override
+    @Transactional
+    public void updateStatus(Integer id, Status status) {
+
+        DelayedTransferRequest request = delayedTransferRequestRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ErrorCode.DELAYED_TRANSFER_NOT_FOUND));
+
+        request.setStatus(status);
+
+        delayedTransferRequestRepository.save(request);
     }
 }

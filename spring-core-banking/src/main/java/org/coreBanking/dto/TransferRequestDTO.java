@@ -30,4 +30,7 @@ public class TransferRequestDTO {
     @NotNull(message = "Transfer Amount is required")
     @DecimalMin(value = "1", message = "Transfer Amount must be greater than 0")
     private Long transferAmount;
+
+    @DecimalMin(value = "0", message = "Delayed Transfer ID must be equal or greater than 0")
+    private Integer delayedTransferId;
 }

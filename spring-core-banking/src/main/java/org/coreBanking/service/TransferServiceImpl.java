@@ -6,6 +6,7 @@ import java.time.Instant;
 import org.coreBanking.dto.TransferRequestDTO;
 import org.coreBanking.exception.CustomException;
 import org.coreBanking.exception.ErrorCode;
+import org.coreBanking.model.DelayedTransferRequest.Status;
 import org.coreBanking.model.TransferLog;
 import org.coreBanking.repository.TransferLogRepository;
 import org.springframework.stereotype.Service;
@@ -20,15 +21,17 @@ public class TransferServiceImpl implements TransferService {
     private final DepositService depositService;
     private final WithdrawalService withdrawalService;
     private final OtherBankService otherBankService;
+    private final DelayedTransferService delayedTransferService;
     private final TransferLogRepository transferLogRepository;
 
     public TransferServiceImpl(Clock clock, DepositService depositService, WithdrawalService withdrawalService,
-        OtherBankService otherBankService,
+        OtherBankService otherBankService, DelayedTransferService delayedTransferService,
         TransferLogRepository transferLogRepository) {
         this.clock = clock;
         this.depositService = depositService;
         this.withdrawalService = withdrawalService;
         this.otherBankService = otherBankService;
+        this.delayedTransferService = delayedTransferService;
         this.transferLogRepository = transferLogRepository;
     }
 
@@ -59,6 +62,12 @@ public class TransferServiceImpl implements TransferService {
 
             // 송금 내역 적재
             _saveTransferLog(transferRequestDTO);
+        }
+
+        // 만약 지연이체 건이었다면 처리 상태 완료로 변경
+        if (transferRequestDTO.getDelayedTransferId() != null) {
+            delayedTransferService.updateStatus(transferRequestDTO.getDelayedTransferId(),
+                Status.COMPLETED);
         }
     }
 
