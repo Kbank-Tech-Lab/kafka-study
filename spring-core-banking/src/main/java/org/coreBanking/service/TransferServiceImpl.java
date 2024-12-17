@@ -1,7 +1,7 @@
 package org.coreBanking.service;
 
 import java.sql.Timestamp;
-import org.coreBanking.dto.TransferRequest;
+import org.coreBanking.dto.TransferRequestDTO;
 import org.coreBanking.model.TransferLog;
 import org.coreBanking.repository.TransferLogRepository;
 import org.springframework.stereotype.Service;
@@ -25,24 +25,24 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     @Transactional
-    public void processTransfer(TransferRequest transferRequest) {
-        if (KbankCode.equals(transferRequest.getToBankCode())) {
+    public void processTransfer(TransferRequestDTO transferRequestDTO) {
+        if (KbankCode.equals(transferRequestDTO.getToBankCode())) {
             // 자기 자신으로 송금 불가
-            if (transferRequest.getFromAccount().equals(transferRequest.getToAccount())) {
+            if (transferRequestDTO.getFromAccount().equals(transferRequestDTO.getToAccount())) {
                 throw new RuntimeException("Transfer to same account impossible.");
             }
 
             // 출금
-            withdrawalService.withdrawFromAccount(transferRequest.getFromAccount(), transferRequest.getTransferAmount());
+            withdrawalService.withdrawFromAccount(transferRequestDTO.getFromAccount(), transferRequestDTO.getTransferAmount());
 
             // 입금
-            depositService.depositToAccount(transferRequest.getToAccount(), transferRequest.getTransferAmount());
+            depositService.depositToAccount(transferRequestDTO.getToAccount(), transferRequestDTO.getTransferAmount());
 
             // 송금내역 적재
             TransferLog transferLog = new TransferLog();
-            transferLog.setFromAccountNumber(transferRequest.getFromAccount());
-            transferLog.setToAccount(transferRequest.getToAccount());
-            transferLog.setTransferAmount(transferRequest.getTransferAmount());
+            transferLog.setFromAccountNumber(transferRequestDTO.getFromAccount());
+            transferLog.setToAccount(transferRequestDTO.getToAccount());
+            transferLog.setTransferAmount(transferRequestDTO.getTransferAmount());
             transferLog.setProcessedAt(new Timestamp(System.currentTimeMillis()));
             transferLogRepository.save(transferLog);
 
