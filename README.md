@@ -21,12 +21,17 @@
 
 
 ### CORE-BANKING ERROR
-| **코드 그룹**         | **에러 코드**       | **메시지**                                |
-|-----------------------|---------------------|-------------------------------------------|
-| **시스템 관련 에러**    | SYS0001            | A system error occurred                   |
-|                       | SYS0002            | Invalid parameter                         |
-| **계좌 관련 에러**      | COR0001            | Account not found                         |
-| **고객 관련 에러**      | COR1001            | Customer not found                        |
-| **송금 관련 에러**      | COR2001            | Insufficient account balance              |
-|                       | COR2002            | Transfer to same account                  |
-|                       | COR2003            | Transfer to other bank                    |
+| **코드 그룹**           | **에러 코드**             | **메시지**                                  |
+|-------------------------|---------------------------|---------------------------------------------|
+| **시스템 관련 에러**      | SYS0001                  | A system error occurred                     |
+|                         | SYS0002                  | Invalid parameter                           |
+| **계좌 관련 에러**        | COR0001                  | Account not found                           |
+| **고객 관련 에러**        | COR1001                  | Customer not found                          |
+| **송금 관련 에러**        | COR2001                  | Insufficient account balance                |
+|                         | COR2002                  | Transfer to same account                    |
+|                         | COR2003                  | Transfer to other bank                      |
+| **은행 관련 에러**        | COR3001                  | Bank not found                              |
+|                         | COR3002                  | Bank under maintenance                      |
+|                         | COR3003                  | Other bank transfer timed out               |
+|                         | COR3004                  | Bank transfer was interrupted               |
+| **지연이체 관련 에러**    | COR4001                  | Delayed transfer not found                  |
