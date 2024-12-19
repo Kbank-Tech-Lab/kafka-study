@@ -5,15 +5,15 @@ import lombok.Getter;
 
 @Getter
 public class MessageDto {
-    private Long id;
+    private Long delayedTransferId;
     private String fromAccount;
     private String toBankCode;
     private String toAccount;
     private Long transferAmount;
 
     @JsonSetter("id")
-    public void setId(Long id) {
-        this.id = id;
+    public void setDelayedTransferId(Long delayedTransferId) {
+        this.delayedTransferId = delayedTransferId;
     }
 
     @JsonSetter("from_account")
@@ -39,7 +39,7 @@ public class MessageDto {
     @Override
     public String toString() {
         return "MessageDto{" +
-                "id='" + id + '\'' +
+                "delayedTransferId='" + delayedTransferId + '\'' +
                 ", fromAccount='" + fromAccount + '\'' +
                 ", toBankCode='" + toBankCode + '\'' +
                 ", toAccount='" + toAccount + '\'' +
