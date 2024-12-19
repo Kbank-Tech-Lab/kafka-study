@@ -1,11 +1,11 @@
 server:
   port: 8100
 
-spring:
-  data:
-    redis:
-      repositories:
-        enabled: false
-      host: 127.0.0.1
-      port: 6400
-      password: kbank
+#spring:
+#  data:
+#    redis:
+#      repositories:
+#        enabled: false
+#      host: 127.0.0.1
+#      port: 6400
+#      password: kbank
