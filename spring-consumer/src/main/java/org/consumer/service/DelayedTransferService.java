@@ -16,7 +16,7 @@ public class DelayedTransferService {
     private final DelayedTransferRepository delayedTransferRepository;
 
     public void processTransfer(MessageDto messageDto) {
-        delayedTransferRepository.findById(messageDto.getId()).ifPresent(
+        delayedTransferRepository.findById(messageDto.getDelayedTransferId()).ifPresent(
                 delayedTransferRequest -> {
                     if (TransferStatus.PENDING.equals(delayedTransferRequest.getStatus())) {
                         externalApiClient.callTransferApi(messageDto);
