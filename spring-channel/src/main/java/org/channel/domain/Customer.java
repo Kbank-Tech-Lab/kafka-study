@@ -1,4 +1,4 @@
-package org.channel.dto;
+package org.channel.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,6 +11,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "customer")
 public class Customer {
     @Id
     @GeneratedValue

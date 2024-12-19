@@ -1,4 +1,4 @@
-package org.channel.dto;
+package org.channel.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

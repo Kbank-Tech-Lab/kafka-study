@@ -1,6 +1,6 @@
 package org.channel.repository;
 
-import org.channel.dto.TransferLog;
+import org.channel.domain.TransferLog;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,7 +26,7 @@ public interface TransferLogRepository extends JpaRepository<TransferLog, Long> 
 
     @Query(value = "select t " +
             "from TransferLog t " +
-            "where t.fromAccountNumber = :accountId or t.toAccount = :accountId " +
+            "where t.fromAccountNumber = :accountNumber or t.toAccount = :accountNumber " +
             "order by t.createdAt desc ")
-    List<TransferLog> findTransferLogsByAccountId(UUID accountId);
+    List<TransferLog> findTransferLogsByAccountId(String accountNumber);
 }

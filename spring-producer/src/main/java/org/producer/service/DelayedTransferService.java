@@ -19,6 +19,6 @@ public class DelayedTransferService {
      *  ORDER BY requested_at ASC <- TO-DO: 컨슈머가 kafka message queue에서 ASC 순서로 읽는지, DESC 순서로 읽는지 확인
      */
     public List<DelayedTransferRequest> readDelayedTransferRequestOrderBy() {
-        return delayedTransferRequestRepository.findByStatusOrderByRequestedAtAsc("PENDING");
+        return delayedTransferRequestRepository.findByStatusOrderByRequestedAtAsc(DelayedTransferRequest.Status.PENDING);
     }
 }

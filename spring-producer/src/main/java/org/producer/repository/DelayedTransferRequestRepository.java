@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface DelayedTransferRequestRepository extends JpaRepository<DelayedTransferRequest, Integer> {
-    public List<DelayedTransferRequest> findByStatusOrderByRequestedAtAsc(String status);
+    public List<DelayedTransferRequest> findByStatusOrderByRequestedAtAsc(DelayedTransferRequest.Status status);
 }

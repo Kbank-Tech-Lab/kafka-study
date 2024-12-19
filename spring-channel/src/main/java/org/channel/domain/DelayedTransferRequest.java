@@ -1,4 +1,4 @@
-package org.channel.dto;
+package org.channel.domain;
 
 import java.sql.Timestamp;
 

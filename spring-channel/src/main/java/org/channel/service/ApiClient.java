@@ -1,7 +1,6 @@
 package org.channel.service;
 
-import lombok.RequiredArgsConstructor;
-import org.channel.dto.DelayedTransferRequest;
+import org.channel.domain.DelayedTransferRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 

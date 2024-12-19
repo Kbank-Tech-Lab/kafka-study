@@ -1,10 +1,9 @@
 package org.channel.repository;
 
-import org.channel.dto.Customer;
+import org.channel.domain.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Repository

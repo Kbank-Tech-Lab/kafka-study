@@ -8,6 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -18,6 +19,7 @@ public class DelayedTransferScheduler {
     private final DelayedTransferService delayedTransferService;
     @Scheduled(fixedRate = 1 * 60 * 1000)// 1분 주기 실행
     public void readRequestAndProduceEvent() {
+        System.out.println("readRequestAndProduceEvent    " + LocalDateTime.now().toString());
         // DB로부터 지연이체요청 내역을 읽어들임
         List<DelayedTransferRequest> requests = delayedTransferService.readDelayedTransferRequestOrderBy();
         // kafa로 이벤트 발행
