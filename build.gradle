@@ -30,6 +30,8 @@ configure(subprojects.findAll { it.name.contains('spring') }) {
     }
 
     dependencies {
+        // https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter
+        implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.40.2'
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.postgresql:postgresql:42.6.0'
