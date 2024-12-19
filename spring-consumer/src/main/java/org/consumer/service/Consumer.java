@@ -3,13 +3,13 @@ package org.consumer.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.consumer.dto.TransferStatusDto;
 import org.consumer.dto.MessageDto;
-import org.consumer.repository.DelayedTransferRepository;
-import org.consumer.util.ExternalApiClient;
-import org.consumer.util.TransferStatus;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Component
@@ -18,8 +18,8 @@ public class Consumer {
     private final static String TOPIC = "delay-transfer-topic";
     private final static String GROUP_ID = "group1";
 
-    private final ExternalApiClient externalApiClient;
-    private final DelayedTransferRepository delayedTransferRepository;
+    private final RedissonClient redissonClient;
+    private final DelayedTransferService delayedTransferService;
 
     @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
     public void receive(ConsumerRecord<String, MessageDto> record) {
@@ -28,31 +28,20 @@ public class Consumer {
         log.info("Consumed message`s key: {}", userId);
         log.info("Consumed message`s value: {}", messageDto.toString());
 
-        delayedTransferRepository.findById(messageDto.getId()).ifPresent(
-                transferStatusDto -> {
-                if (TransferStatus.PENDING.equals(transferStatusDto.getStatus())) {
-                    log.info("Transfer is delayed");
-                    saveTransferStatus(transferStatusDto, TransferStatus.IN_PROGRESS);
+        RLock lock = redissonClient.getLock(messageDto.getFromAccount());
 
-                    externalApiClient.callTransferApi(
-                        messageDto,
-                        () -> {
-                            log.info("Transfer is successful");
-                            saveTransferStatus(transferStatusDto, TransferStatus.COMPLETED);
-                        },
-                        () -> {
-                            log.info("Transfer is failed");
-                            saveTransferStatus(transferStatusDto, TransferStatus.FAILED);
-                        }
-                    );
+        try {
+            if (lock.tryLock(5, 5, TimeUnit.SECONDS)) {
+                log.info("Lock acquired for account: {}", messageDto.getFromAccount());
+                try {
+                    delayedTransferService.processTransfer(messageDto);
+                } finally {
+                    lock.unlock();
+                    log.info("Lock released for account: {}", messageDto.getFromAccount());
                 }
             }
-        );
-    }
-
-    private void saveTransferStatus(TransferStatusDto transferStatusDto,
-                                    String status) {
-        transferStatusDto.setStatus(status);
-        delayedTransferRepository.save(transferStatusDto);
+        } catch (InterruptedException e) {
+            log.error("Could not acquire lock");
+        }
     }
 }
