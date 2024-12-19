@@ -13,6 +13,4 @@ public class DelayedTransferRequest {
     private String toAccount;
 
     private Long transferAmount;
-
-    private Timestamp requestedAt;
 }

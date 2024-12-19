@@ -1,6 +1,5 @@
 package org.channel.service;
 
-import lombok.RequiredArgsConstructor;
 import org.channel.domain.Customer;
 import org.channel.domain.DelayedTransferRequest;
 import org.channel.domain.DepositAccount;
@@ -10,6 +9,7 @@ import org.channel.repository.CustomerRepository;
 import org.channel.repository.DepositAccountRepository;
 import org.channel.repository.TransferLogRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,13 +17,13 @@ import java.util.UUID;
 
 @Service
 public class TransferService {
-    private final ApiClient apiClient;
+    private final CoreBankingApiClient coreBankingApiClient;
     private final CustomerRepository customerRepository;
     private final DepositAccountRepository depositAccountRepository;
     private final TransferLogRepository transferLogRepository;
 
-    public TransferService(ApiClient apiClient, CustomerRepository customerRepository, DepositAccountRepository depositAccountRepository, TransferLogRepository transferLogRepository) {
-        this.apiClient = apiClient;
+    public TransferService(CoreBankingApiClient coreBankingApiClient, CustomerRepository customerRepository, DepositAccountRepository depositAccountRepository, TransferLogRepository transferLogRepository) {
+        this.coreBankingApiClient = coreBankingApiClient;
         this.customerRepository = customerRepository;
         this.depositAccountRepository = depositAccountRepository;
         this.transferLogRepository = transferLogRepository;
@@ -49,11 +49,16 @@ public class TransferService {
     }
 
     public String registerDelayedTransfer(DelayedTransferRequest request) {
-        // producer 서버에 지연이체 요청
-        apiClient.registerDelayedTransfer(request);
-        System.out.println("request = " + request);
-        // 지연이체등록 성공시 성공 메시지 리턴
-        return "00";
+        // core-banking 서버에 지연이체등록API 전송
+        HttpStatusCode responseStatusCode = coreBankingApiClient.registerDelayedTransfer(request);
+
+        if (responseStatusCode.is2xxSuccessful()) {
+            return "00";
+        } else if (responseStatusCode.isError()){
+            throw new RuntimeException("지연이체등록 실패 (네트워크 오류 혹은 core-banking 오류)");
+        } else {
+            throw new RuntimeException("지연이체등록 실패 (http 응답코드가 비정상)");
+        }
     }
 
     private void insertTestData() {

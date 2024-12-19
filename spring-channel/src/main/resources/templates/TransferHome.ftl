@@ -18,11 +18,27 @@
 <div class="container" id="app" v-cloak>
     <#-- 계좌 히스토리   -->
     <ul class="list-group" v-if="depositAccountTransferLogs.length > 0">
-        <li class="list-group-item d-flex justify-content-between" v-for="depositAccountTransferLog in depositAccountTransferLogs">
-            <span>
-              이체히스토리 식별자: {{depositAccountTransferLog.id}} 보내는 사람 계좌: {{depositAccountTransferLog.fromAccountNumber}} 받는 사람 은행코드: {{depositAccountTransferLog.toBankCode}} 받는 사람 계좌: {{depositAccountTransferLog.toAccount}} 송금액: {{depositAccountTransferLog.transferAmount}} 요청일시: {{depositAccountTransferLog.createdAt}}, 완료일시: {{depositAccountTransferLog.processedAt}}
-            </span>
-        </li>
+        <table>
+            <tr>
+                <th>보내는 사람 계좌</th>
+                <th>받는 사람 은행코드</th>
+                <th>받는 사람 계좌</th>
+                <th>송금액</th>
+                <th>요청일시</th>
+                <th>완료일시</th>
+            </tr>
+            <tr v-for="depositAccountTransferLog in depositAccountTransferLogs">
+                <td>{{depositAccountTransferLog.fromAccountNumber}}</td>
+                <td>{{depositAccountTransferLog.toBankCode}}</td>
+                <td>{{depositAccountTransferLog.toAccount}}</td>
+                <td>{{depositAccountTransferLog.transferAmount}}</td>
+                <td>{{depositAccountTransferLog.createdAt}}</td>
+                <td>{{depositAccountTransferLog.processedAt}}</td>
+        </table>
+
+        <div style="text-align: right">
+            <button @click="depositAccountTransferLogs = []"> 계좌이체내역 닫기 </button>
+        </div>
     </ul>
     <div>
         <span>송금자: {{transferSender}}</span>
@@ -34,7 +50,7 @@
     <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between" v-for="depositAccountDto in depositAccountDtoList">
             <span>
-              고객식별자: {{depositAccountDto.customerId}}    고객이름: {{depositAccountDto.customerName}}   고객계좌번호: {{depositAccountDto.accountNumber}}
+              고객이름: {{depositAccountDto.customerName}}  계좌잔액: {{depositAccountDto.balance}}  고객계좌번호: {{depositAccountDto.accountNumber}}
             </span>
             <button @click="clickShowHistory(depositAccountDto.accountNumber)">계좌 히스토리 보기</button>
             <button @click="clickSetSender(depositAccountDto.accountNumber)">송금자로 세팅</button>
@@ -99,8 +115,8 @@
                 axios.post('/transfer/register/delayed_transfer', {
                     fromAccount: this.transferSender,
                     toAccount: this.transferReceiver,
+                    toBankCode: "87",
                     transferAmount: this.transferAmount,
-                    requestedAt: new Date().toISOString() // 날짜형식 확인
                 })
                     .then(response => {
                         alert('송금 요청 성공');

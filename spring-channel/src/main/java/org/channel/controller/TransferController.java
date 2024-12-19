@@ -29,6 +29,7 @@ public class TransferController {
         // 고객식별자, 고객계좌 식별자, 고객계좌 잔액
         return transferService.getDepositAccountDtoList();
     }
+
     // TO-DO: 페이징 처리
     @GetMapping("/accountHistory/{accountNumber}")
     @ResponseBody
@@ -41,13 +42,6 @@ public class TransferController {
     @PostMapping("/register/delayed_transfer")
     @ResponseBody
     public String delayedTransfer(DelayedTransferRequest request) {
-        Object out = transferService.registerDelayedTransfer(request);
-        return "00";
-    }
-
-    @GetMapping("/test")
-    @ResponseBody
-    public String test () {
-        return "test completed";
+        return transferService.registerDelayedTransfer(request);
     }
 }
