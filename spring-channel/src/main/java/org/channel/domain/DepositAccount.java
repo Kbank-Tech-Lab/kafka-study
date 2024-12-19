@@ -1,4 +1,4 @@
-package org.coreBanking.model;
+package org.channel.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

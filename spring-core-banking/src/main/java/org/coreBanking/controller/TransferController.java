@@ -1,6 +1,8 @@
 package org.coreBanking.controller;
 
-import org.coreBanking.dto.TransferRequest;
+
+import jakarta.validation.Valid;
+import org.coreBanking.dto.TransferRequestDTO;
 import org.coreBanking.service.TransferService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +20,11 @@ public class TransferController {
         this.transferService = transferService;
     }
 
+    // 송금 API
     @PostMapping("/process")
-    public ResponseEntity<String> processTransfer(@RequestBody TransferRequest transferRequest) {
+    public ResponseEntity<String> processTransfer(@Valid @RequestBody TransferRequestDTO transferRequestDTO) {
 
-        transferService.processTransfer(transferRequest);
+        transferService.processTransfer(transferRequestDTO);
 
         return ResponseEntity.ok("Transfer processed successfully.");
     }
