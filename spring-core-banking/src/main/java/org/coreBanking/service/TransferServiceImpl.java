@@ -39,6 +39,7 @@ public class TransferServiceImpl implements TransferService {
     @Override
     @Transactional
     public void processTransfer(TransferRequestDTO transferRequestDTO) {
+        System.out.println("Request: " + transferRequestDTO);
         if (KbankCode.equals(transferRequestDTO.getToBankCode())) {
             // 자기 자신에게 송금 불가
             if (transferRequestDTO.getFromAccount().equals(transferRequestDTO.getToAccount())) {
