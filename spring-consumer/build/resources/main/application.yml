@@ -1,11 +1,20 @@
 server:
   port: 8100
 
-#spring:
-#  data:
-#    redis:
-#      repositories:
-#        enabled: false
-#      host: 127.0.0.1
-#      port: 6400
-#      password: kbank
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  data:
+    redis:
+      repositories:
+        enabled: false
+      host: 127.0.0.1
+      port: 6400
+      password: kbank

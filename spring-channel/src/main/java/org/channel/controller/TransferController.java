@@ -41,7 +41,7 @@ public class TransferController {
     // sync, blocking 방식
     @PostMapping("/register/delayed_transfer")
     @ResponseBody
-    public String delayedTransfer(DelayedTransferRequest request) {
+    public String delayedTransfer(@RequestBody()  DelayedTransferRequest request) {
         return transferService.registerDelayedTransfer(request);
     }
 }

@@ -27,7 +27,7 @@ public class TransferService {
         this.customerRepository = customerRepository;
         this.depositAccountRepository = depositAccountRepository;
         this.transferLogRepository = transferLogRepository;
-        insertTestData();
+        // insertTestData();
     }
     public List<TransferLog> getTransferLogsByFromAccountId(UUID accountId, Integer curPage, Integer pageCount) {
         // 계좌이체내역 조회

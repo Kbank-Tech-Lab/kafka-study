@@ -10,13 +10,28 @@ import org.springframework.web.client.RestClient;
 public class CoreBankingApiClient {
     private final RestClient restClient;
     // TO-DO: 환경변수
-    private final String coreBankingUrl = "http://localhost:8200";
+    private final String coreBankingUrl = "http://localhost:8300";
 
     public CoreBankingApiClient(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.baseUrl(coreBankingUrl).build();
     }
 
     public HttpStatusCode registerDelayedTransfer(DelayedTransferRequest request) {
+        /*
+        fromAccount
+           :
+        "000000000000"
+        toAccount
+        :
+        "000000000001"
+        toBankCode
+        :
+        "87"
+        transferAmount
+        :
+        "300"
+        */
+
         try {
             ResponseEntity<String> entity = restClient.post().uri("/api/delayed-transfer/request").body(request).retrieve().toEntity(String.class);
             return entity.getStatusCode();

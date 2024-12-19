@@ -115,7 +115,7 @@
                 axios.post('/transfer/register/delayed_transfer', {
                     fromAccount: this.transferSender,
                     toAccount: this.transferReceiver,
-                    toBankCode: "87",
+                    toBankCode: "088",
                     transferAmount: this.transferAmount,
                 })
                     .then(response => {

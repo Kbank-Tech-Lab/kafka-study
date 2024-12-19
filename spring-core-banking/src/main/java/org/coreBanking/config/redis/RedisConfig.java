@@ -1,4 +1,4 @@
-package org.channel.config.redis;
+package org.coreBanking.config.redis;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
