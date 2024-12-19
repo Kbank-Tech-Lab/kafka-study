@@ -1,8 +1,6 @@
 package org.coreBanking.service;
 
 import java.sql.Timestamp;
-import java.time.Clock;
-import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -22,17 +20,15 @@ public class TransferServiceImpl implements TransferService {
 
     private final String KbankCode = "089";
 
-    private final Clock clock;
     private final DepositService depositService;
     private final WithdrawalService withdrawalService;
     private final OtherBankService otherBankService;
     private final DelayedTransferService delayedTransferService;
     private final TransferLogRepository transferLogRepository;
 
-    public TransferServiceImpl(Clock clock, DepositService depositService, WithdrawalService withdrawalService,
+    public TransferServiceImpl(DepositService depositService, WithdrawalService withdrawalService,
         OtherBankService otherBankService, DelayedTransferService delayedTransferService,
         TransferLogRepository transferLogRepository) {
-        this.clock = clock;
         this.depositService = depositService;
         this.withdrawalService = withdrawalService;
         this.otherBankService = otherBankService;
@@ -105,7 +101,7 @@ public class TransferServiceImpl implements TransferService {
         transferLog.setToBankCode(transferRequestDTO.getToBankCode());
         transferLog.setToAccount(transferRequestDTO.getToAccount());
         transferLog.setTransferAmount(transferRequestDTO.getTransferAmount());
-        transferLog.setProcessedAt(Timestamp.from(Instant.now(clock)));
+        transferLog.setProcessedAt(new Timestamp(System.currentTimeMillis()));
 
         transferLogRepository.save(transferLog);
     }

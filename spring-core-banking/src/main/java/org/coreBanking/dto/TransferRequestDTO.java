@@ -14,10 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TransferRequestDTO {
 
-    @NotNull(message = "ID is required")
-    @DecimalMin(value = "1", message = "ID must be greater than 0")
-    private Long id;
-
     @NotBlank(message = "From Account is required and cannot be blank")
     private String fromAccount;
 

@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.coreBanking.exception.CustomException;
 import org.coreBanking.exception.ErrorCode;
 import org.coreBanking.model.Bank;
@@ -42,6 +43,14 @@ public class OtherBankServiceImpl implements OtherBankService {
 
     @Override
     public void transferOtherBank(String bankCode, String accountNumber, Long amount) {
+        Random random = new Random(10);
+
+        try {
+            Thread.sleep(Math.max((long) random.nextGaussian(20000, 20000), 0) + 5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (isUnderMaintenance(bankCode)) {
             throw new CustomException(ErrorCode.BANK_UNDER_MAINTENANCE);
         }
