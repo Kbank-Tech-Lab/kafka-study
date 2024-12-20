@@ -9,6 +9,9 @@ import org.redisson.api.RedissonClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -17,9 +20,10 @@ import java.util.concurrent.TimeUnit;
 public class Consumer {
     private final static String TOPIC = "delay-transfer-topic";
     private final static String GROUP_ID = "group1";
+    private final static int THREAD_COUNT = 10;
 
-    private final RedissonClient redissonClient;
     private final DelayedTransferService delayedTransferService;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
 
     @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
     public void receive(ConsumerRecord<String, MessageDto> record) {
@@ -28,20 +32,6 @@ public class Consumer {
         log.info("Consumed message`s key: {}", userId);
         log.info("Consumed message`s value: {}", messageDto.toString());
 
-        RLock lock = redissonClient.getLock(messageDto.getFromAccount());
-
-        try {
-            if (lock.tryLock(5, 5, TimeUnit.SECONDS)) {
-                log.info("Lock acquired for account: {}", messageDto.getFromAccount());
-                try {
-                    delayedTransferService.processTransfer(messageDto);
-                } finally {
-                    lock.unlock();
-                    log.info("Lock released for account: {}", messageDto.getFromAccount());
-                }
-            }
-        } catch (InterruptedException e) {
-            log.error("Could not acquire lock");
-        }
+        CompletableFuture.runAsync(() -> delayedTransferService.processTransfer(messageDto), executorService);
     }
 }

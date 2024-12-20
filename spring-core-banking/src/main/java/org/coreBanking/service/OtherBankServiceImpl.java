@@ -46,7 +46,7 @@ public class OtherBankServiceImpl implements OtherBankService {
         Random random = new Random(10);
 
         try {
-            Thread.sleep(Math.max((long) random.nextGaussian(20000, 20000), 0) + 5000);
+            Thread.sleep(Math.max((long) random.nextGaussian(1000, 1000), 0) + 2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

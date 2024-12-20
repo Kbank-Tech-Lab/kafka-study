@@ -109,8 +109,8 @@ public class TestServiceImpl implements TestService {
             delayedTransferRequest.setToAccount(depositAccountList.get(random.nextInt(accountNum)).getAccountNumber());
 
             long randomAmount = 0L;
-            double mean = 30000.0;
-            double stdDev = 5000.0;
+            double mean = 3000.0;
+            double stdDev = 500.0;
             while (true) {
                 randomAmount = (long) random.nextGaussian(mean, stdDev);
                 if (randomAmount >= 0) {
@@ -126,7 +126,7 @@ public class TestServiceImpl implements TestService {
         delayedTransferRequestRepository.saveAll(delayedTransferRequestList);
 
         // 3. 시간 조작
-        setClock(23, 50, 0);
+        setClock(13, 50, 0);
     }
 
     @Override
