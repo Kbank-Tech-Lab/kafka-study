@@ -24,6 +24,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10"); // 최대 10개의 메시지를 한번에 가져옴
 
         JsonDeserializer<MessageDto> deserializer =
                 new JsonDeserializer<>(MessageDto.class, false);
@@ -37,6 +38,7 @@ public class KafkaConsumerConfig {
         final ConcurrentKafkaListenerContainerFactory<String, MessageDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setBatchListener(true); // 배치로 메시지를 처리하도록 설정
         return factory;
     }
 }

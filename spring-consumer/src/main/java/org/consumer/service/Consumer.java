@@ -3,6 +3,7 @@ package org.consumer.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.consumer.dto.MessageDto;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -26,12 +27,14 @@ public class Consumer {
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
 
     @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
-    public void receive(ConsumerRecord<String, MessageDto> record) {
-        final String userId = record.key();
-        final MessageDto messageDto = record.value();
-        log.info("Consumed message`s key: {}", userId);
-        log.info("Consumed message`s value: {}", messageDto.toString());
+    public void receive(ConsumerRecords<String, MessageDto> records) {
+        records.forEach(record -> {
+            String userId = record.key();
+            MessageDto messageDto = record.value();
+            log.info("Consumed message`s key: {}", userId);
+            log.info("Consumed message`s value: {}", messageDto.toString());
 
-        CompletableFuture.runAsync(() -> delayedTransferService.processTransfer(messageDto), executorService);
+            CompletableFuture.runAsync(() -> delayedTransferService.processTransfer(messageDto), executorService);
+        });
     }
 }
