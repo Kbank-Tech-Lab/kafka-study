@@ -36,6 +36,7 @@ public class DelayedTransferScheduler {
                 만약 전자일 경우, 내부적으로 어떻게 partition이 결정되는지 확인 필요
                 만약 후자일 경우, 어떤 기준으로 partition을 결정해야하는지 확인 필요
             */
+            System.out.println("전송할 데이터: " + request.toString());
             CompletableFuture<SendResult<String, MessageDto>> send = kafka.send("delay-transfer-topic", request.getFromAccount(), MessageDto.of(request));
             send.whenComplete((result, ex) -> {
                 if (ex != null) {

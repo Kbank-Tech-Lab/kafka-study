@@ -28,7 +28,7 @@ public class KafkaProducerConfig {
     @Bean
     public Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // Kafka 서버 주소
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094"); // Kafka 서버 주소
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.ACKS_CONFIG, "all"); // 데이터 안정성을 위한 설정
@@ -53,10 +53,8 @@ public class KafkaProducerConfig {
     @Bean
     public org.apache.kafka.clients.admin.NewTopic topic() {
         return TopicBuilder.name(TOPIC_NAME)
-                .partitions(1)
-                .replicas(1)
+                .partitions(3) // 파티션 수
+                .replicas(3) // 복제본 수
                 .build();
     }
-
-
 }
