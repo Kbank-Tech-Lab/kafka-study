@@ -9,7 +9,6 @@ import java.util.concurrent.TimeoutException;
 import org.coreBanking.dto.TransferRequestDTO;
 import org.coreBanking.exception.CustomException;
 import org.coreBanking.exception.ErrorCode;
-import org.coreBanking.model.DelayedTransferRequest.Status;
 import org.coreBanking.model.TransferLog;
 import org.coreBanking.repository.TransferLogRepository;
 import org.springframework.stereotype.Service;
@@ -52,9 +51,6 @@ public class TransferServiceImpl implements TransferService {
             // 입금
             depositService.depositToAccount(transferRequestDTO.getToAccount(), transferRequestDTO.getTransferAmount());
 
-            // 송금 내역 적재
-            _saveTransferLog(transferRequestDTO);
-
         } else {
             // 출금
             withdrawalService.withdrawFromAccount(transferRequestDTO.getFromAccount(), transferRequestDTO.getTransferAmount());
@@ -83,26 +79,29 @@ public class TransferServiceImpl implements TransferService {
                 Thread.currentThread().interrupt();
                 throw new CustomException(ErrorCode.BANK_TRANSFER_INTERRUPTED);
             }
-
-            // 송금 내역 적재
-            _saveTransferLog(transferRequestDTO);
-        }
-
-        // 만약 지연이체 건이었다면 처리 상태 완료로 변경
-        if (transferRequestDTO.getDelayedTransferId() != null) {
-            delayedTransferService.updateStatus(transferRequestDTO.getDelayedTransferId(),
-                Status.COMPLETED);
         }
     }
 
-    private void _saveTransferLog(TransferRequestDTO transferRequestDTO) {
+    public int saveTransferRequestLog(TransferRequestDTO transferRequestDTO) {
         TransferLog transferLog = new TransferLog();
 
         transferLog.setFromAccountNumber(transferRequestDTO.getFromAccount());
         transferLog.setToBankCode(transferRequestDTO.getToBankCode());
         transferLog.setToAccount(transferRequestDTO.getToAccount());
         transferLog.setTransferAmount(transferRequestDTO.getTransferAmount());
+        transferLog.setDelayedTransferId(transferRequestDTO.getDelayedTransferId());
+        transferLog.setRequestedAt(new Timestamp(System.currentTimeMillis()));
+
+        return transferLogRepository.save(transferLog).getId();
+    }
+
+    public void saveTransferResponseLog(int id, boolean isCompleted, String errorCode) {
+        TransferLog transferLog = transferLogRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ErrorCode.TRANSFER_LOG_NOT_FOUND));
+
         transferLog.setProcessedAt(new Timestamp(System.currentTimeMillis()));
+        transferLog.setIsCompleted(isCompleted);
+        transferLog.setErrorCode(errorCode);
 
         transferLogRepository.save(transferLog);
     }

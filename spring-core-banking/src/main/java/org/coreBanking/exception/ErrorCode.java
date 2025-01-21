@@ -16,6 +16,7 @@ public enum ErrorCode {
     INSUFFICIENT_BALANCE("COR2001", "Insufficient account balance"),
     TRANSFER_TO_SAME_ACCOUNT("COR2002", "Transfer to same account"),
     TRANSFER_TO_OTHER_BANK("COR2003", "Transfer to other bank"),
+    TRANSFER_LOG_NOT_FOUND("COR2004", "Transfer log not found"),
 
     // 은행 관련 에러
     BANK_NOT_FOUND("COR3001", "Bank not found"),
