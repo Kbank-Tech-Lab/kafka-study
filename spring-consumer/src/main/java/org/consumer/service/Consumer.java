@@ -2,18 +2,14 @@ package org.consumer.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.consumer.dto.MessageDto;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Component
@@ -30,8 +26,12 @@ public class Consumer {
     public void receive(ConsumerRecords<String, MessageDto> records) {
         records.forEach(record -> {
             String userId = record.key();
+            int partition = record.partition();
+
             MessageDto messageDto = record.value();
+            log.info("message consume start time: {}", System.currentTimeMillis());
             log.info("Consumed message`s key: {}", userId);
+            log.info("Consumed message`s partition: {}", partition);
             log.info("Consumed message`s value: {}", messageDto.toString());
 
             CompletableFuture.runAsync(() -> delayedTransferService.processTransfer(messageDto), executorService);

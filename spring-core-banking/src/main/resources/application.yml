@@ -8,7 +8,7 @@ spring:
     password: mypassword
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 20
+      maximum-pool-size: 60
   jpa:
     hibernate:
       ddl-auto: update

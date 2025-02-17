@@ -1,12 +1,11 @@
-server:
-  port: 8100
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/mydatabase
     username: myuser
     password: mypassword
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 12
   jpa:
     hibernate:
       ddl-auto: update

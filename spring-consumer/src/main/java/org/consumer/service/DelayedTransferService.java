@@ -25,7 +25,7 @@ public class DelayedTransferService {
         RLock lock = redissonClient.getLock(messageDto.getFromAccount());
 
         try {
-            if (lock.tryLock(5, 5, TimeUnit.SECONDS)) {
+            if (lock.tryLock()) {
                 log.info("Lock acquired for account: {}", messageDto.getFromAccount());
                 try {
                     delayedTransferRepository.findById(messageDto.getDelayedTransferId()).ifPresent(
@@ -41,8 +41,10 @@ public class DelayedTransferService {
                     log.info("Lock released for account: {}", messageDto.getFromAccount());
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             log.error("Could not acquire lock");
         }
+
+        log.info("message consume end time: {}", System.currentTimeMillis());
     }
 }

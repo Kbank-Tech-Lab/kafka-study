@@ -31,6 +31,7 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094"); // Kafka 서버 주소
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, AccountNumberPartitioner.class); // 파티션 지정
         props.put(ProducerConfig.ACKS_CONFIG, "all"); // 데이터 안정성을 위한 설정
         props.put(ProducerConfig.RETRIES_CONFIG, 3); // 재시도 횟수
         props.put(ProducerConfig.LINGER_MS_CONFIG, 1); // 배치 전송 지연 시간
