@@ -18,6 +18,8 @@
 
 ### ERD
 **https://www.erdcloud.com/d/F4pkcGhThyksWxswp** <br>
+![image](https://github.com/user-attachments/assets/a410311d-6840-4bff-bb01-f38686ed706d)<br>
+
 
 
 ### CORE-BANKING ERROR
