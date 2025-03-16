@@ -1,33 +1,52 @@
 package org.coreBanking.exception;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // RuntimeException 처리
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Error: " + ex.getMessage());
+    // CustomException 처리
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<Map<String, String>> handleCustomException(CustomException ex) {
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("errorCode", ex.getErrorCode());
+        errorDetails.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
+
+    // Exception 처리
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("errorCode", ErrorCode.SYSTEM_ERROR.getCode());
+        errorDetails.put("message", ErrorCode.SYSTEM_ERROR.getMessage());
+        errorDetails.put("details", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
     }
 
     // MethodArgumentNotValidException 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        BindingResult result = ex.getBindingResult();
-        StringBuilder errorMessage = new StringBuilder("Validation failed: ");
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errorDetails = new HashMap<>();
+        BindingResult bindingResult = ex.getBindingResult();
 
-        for (FieldError error : result.getFieldErrors()) {
-            errorMessage.append(error.getField()).append(" ").append(error.getDefaultMessage()).append("; ");
+        // 첫 번째 에러 가져오기
+        if (bindingResult.hasFieldErrors()) {
+            var firstError = bindingResult.getFieldErrors().get(0);
+            errorDetails.put("errorCode", ErrorCode.INVALID_PARAM.getCode());
+            errorDetails.put("message", firstError.getDefaultMessage());
+            errorDetails.put("field", firstError.getField());
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 }

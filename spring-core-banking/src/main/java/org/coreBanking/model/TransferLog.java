@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.sql.Timestamp;
 import lombok.Getter;
@@ -37,24 +35,18 @@ public class TransferLog {
     @Column(name = "transfer_amount", nullable = false)
     private Long transferAmount;
 
+    @Column(name = "delayed_transfer_id")
+    private Integer delayedTransferId;
+
+    @Column(name = "requested_at")
+    private Timestamp requestedAt;
+
     @Column(name = "processed_at")
     private Timestamp processedAt;
 
-    @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    @Column(name = "is_completed")
+    private Boolean isCompleted;
 
-    @Column(name = "updated_at")
-    private Timestamp updatedAt;
-
-    @PrePersist
-    public void prePersist() {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        this.createdAt = now;
-        this.updatedAt = now;
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
-    }
+    @Column(name = "error_code", length = 7)
+    private String errorCode;
 }
